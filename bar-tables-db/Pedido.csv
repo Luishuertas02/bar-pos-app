@@ -1,0 +1,5 @@
+Codigo de Pedido,Mesa,Estado,Total,Metodo de Pago
+PED-001,Mesa 1,Abierto,0,Efectivo
+PED-002,Mesa 3,Pidiendo Cuenta,70000,Transferencia / Nequi
+PED-003,Barra 1,Abierto,0,Efectivo
+PED-004,Mesa Principal (VIP),Cerrado / Pagado,260000,Tarjeta

@@ -1,0 +1,77 @@
+Nombre del Producto,Precio de Venta,Categoría
+Águila,5000,Cerveza Nacional
+Águila Light,6000,Cerveza Nacional
+Club Colombia (Roja / Trigo / Dorada),7000,Cerveza Nacional
+Budweiser,6000,Cerveza Importada
+Coronita,6000,Cerveza Importada
+Heineken,8000,Cerveza Importada
+Stella Artois,12000,Cerveza Importada
+Corona,12000,Cerveza Importada
+Michelada,15000,Cerveza Importada
+Cubetazo Budweiser,35000,Cubetazos
+Cubetazo Coronita,35000,Cubetazos
+Cubetazo Heineken,40000,Cubetazos
+Cubetazo Club Colombia,35000,Cubetazos
+Combo Antioqueño + 6 Cervezas,150000,Combos Cubetazo
+Combo Amarillo + 6 Cervezas,150000,Combos Cubetazo
+Combo Whisky + 6 Cervezas,190000,Combos Cubetazo
+Néctar Verde Botella,120000,Aguardientes
+Néctar Verde Media,70000,Aguardientes
+Néctar Azul Botella,120000,Aguardientes
+Néctar Azul Media,70000,Aguardientes
+Antioqueño Verde Botella,120000,Aguardientes
+Antioqueño Verde Media,70000,Aguardientes
+Antioqueño Azul Botella,120000,Aguardientes
+Antioqueño Azul Media,70000,Aguardientes
+Antioqueño Amarillo Botella,130000,Aguardientes
+Antioqueño Amarillo Media,75000,Aguardientes
+Santa Fe Botella,110000,Ron
+Santa Fe Media,70000,Ron
+Viejo Caldas Botella,120000,Ron
+Viejo Caldas Media,75000,Ron
+Bacardi Botella,130000,Ron
+Bacardi Media,80000,Ron
+Carta Blanca Botella,140000,Ron
+Ron Mojito,130000,Ron
+Ron Limón,130000,Ron
+Ron Mandarina,130000,Ron
+Buchanan's (12 Años),260000,Whisky
+Chivas Regal,280000,Whisky
+Something Special,150000,Whisky
+Jack Daniels,180000,Whisky
+Jack Daniels Honey,200000,Whisky
+Red Label,140000,Whisky
+Old Parr,240000,Whisky
+Crema de Whisky Botella,120000,Whisky
+Olmeca Botella,160000,Tequila
+Olmeca Media,90000,Tequila
+José Cuervo Botella,150000,Tequila
+José Cuervo Media,80000,Tequila
+Absolut Vodka,140000,Vodka
+Smirnoff Vodka,140000,Vodka
+Ginebra Gordon's,130000,Otros Licores
+Jägermeister,190000,Otros Licores
+Crema Baileys,130000,Otros Licores
+Smirnoff (Red / Green Apple),15000,Otros Licores
+Vino Caliente,20000,Otros Licores
+Jarra de Cerveza Negra,35000,Jarra de Cerveza
+Jarra de Cerveza Roja,35000,Jarra de Cerveza
+Jarra de Cerveza Azul,35000,Jarra de Cerveza
+Jarra de Cerveza Verde,35000,Jarra de Cerveza
+Jarra de Cerveza Naranja,35000,Jarra de Cerveza
+Margarita,35000,Coctelería
+Cuba Libre,35000,Coctelería
+Martini,35000,Coctelería
+Gin Tonic,35000,Coctelería
+Tequila Sun-Rise,35000,Coctelería
+Cabeza de Jabalí,35000,Coctelería
+Coctel Colores,60000,Coctelería
+Shot Tequila José Cuervo,13000,Shots
+Shot Whisky,15000,Shots
+Shot Néctar Verde,10000,Shots
+Shot Crema de Whisky,15000,Shots
+Red Bull,10000,Otras Bebidas
+Gatorade,6000,Otras Bebidas
+Agua,4000,Otras Bebidas
+Coca-Cola,5000,Otras Bebidas
+Smirnoff Ice,15000,Otras Bebidas

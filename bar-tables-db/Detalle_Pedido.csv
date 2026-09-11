@@ -1,0 +1,5 @@
+Nombre de Detalle,Pedido,Producto,Cantidad,Precio Unitario,Estado del Item
+DET-001,PED-002,Aguardiente Antioqueño Verde Media,1,70000,Entregado
+DET-002,PED-003,Águila,2,5000,En Preparación
+DET-003,PED-004,Buchanan's (12 Años),1,260000,Entregado
+DET-004,PED-001,Cuba Libre,1,35000,Solicitado
