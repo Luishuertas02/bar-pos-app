@@ -427,3 +427,6 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# Frontend (Vite) build output
+bar-system-frontend/dist/

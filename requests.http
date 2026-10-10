@@ -1,0 +1,29 @@
+@baseUrl = http://localhost:5089/api/tables
+
+
+### Listar mesas
+GET {{baseUrl}}
+
+### Consultar una mesa
+GET {{baseUrl}}/Me1
+
+### Cambiar estado (962000000 = Disponible, 962000001 = Ocupada)
+PUT {{baseUrl}}/Me1
+Content-Type: application/json
+
+962000001
+
+### Poner número de personas (>= 1 la marca Ocupada, 0 la deja Disponible)
+PUT {{baseUrl}}/Me1/people
+Content-Type: application/json
+
+3
+
+### Asociar mesas (Me2 y Me3 se unen a Me1)
+PUT {{baseUrl}}/Me1/group
+Content-Type: application/json
+
+["Me2", "Me3"]
+
+### Desasociar solo la mesa Me3 del grupo de Me1
+DELETE {{baseUrl}}/Me1/group/Me3

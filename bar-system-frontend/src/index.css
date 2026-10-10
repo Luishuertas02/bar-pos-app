@@ -1,0 +1,76 @@
+:root {
+  /* Paleta extraída del menú BAR COLORES */
+  --bg-primary: #07061a;
+  --bg-secondary: #0e0c26;
+  --bg-card: #141133;
+  --bg-card-border: #2a2560;
+  --text-primary: #ffffff;
+  --text-secondary: #b9a8ff;
+  --text-muted: #7d78b0;
+  --price: #ffd60a;
+
+  /* Neón del menú */
+  --neon-pink: #ff2e97;
+  --neon-orange: #ff7a1a;
+  --neon-yellow: #ffd60a;
+  --neon-green: #8cf23c;
+  --neon-cyan: #19d3f5;
+  --neon-blue: #3f6bff;
+  --neon-purple: #a239ff;
+  --rainbow: linear-gradient(90deg, #ff2e97, #ff7a1a, #ffd60a, #8cf23c, #19d3f5, #3f6bff, #a239ff);
+
+  /* Estados de mesa */
+  --status-available: #8cf23c;
+  --status-available-bg: rgba(140, 242, 60, 0.15);
+  --status-occupied: #ff2e97;
+  --status-occupied-bg: rgba(255, 46, 151, 0.15);
+
+  --font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-brush: 'Permanent Marker', cursive;
+  --font-display: 'Teko', 'Plus Jakarta Sans', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  background-image:
+    radial-gradient(ellipse 50% 40% at 0% 0%, rgba(255, 46, 151, 0.18), transparent),
+    radial-gradient(ellipse 50% 40% at 100% 0%, rgba(63, 107, 255, 0.18), transparent),
+    radial-gradient(ellipse 60% 40% at 100% 100%, rgba(162, 57, 255, 0.15), transparent);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--bg-card-border);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* Oculta las flechas nativas de los input numéricos (usamos botones − / + propios) */
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type='number'] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
