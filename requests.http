@@ -1,29 +1,305 @@
-@baseUrl = http://localhost:5089/api/tables
+@apiUrl = http://localhost:5089/api
+@tables = {{apiUrl}}/tables
+@products = {{apiUrl}}/products
+@orders = {{apiUrl}}/orders
+
+# Pruebas del backend. Con la extensión REST Client de VS Code aparece
+# "Send Request" encima de cada petición.
+#
+# Estados: 962000000 = Disponible, 962000001 = Ocupada
+# Capacidades actuales: Me1-Me3 y Me5-Me9 = 3, Me4 = 7, Ba1-Ba4 = 1
+#
+# OJO: estas peticiones modifican los datos reales de Dataverse.
 
 
-### Listar mesas
-GET {{baseUrl}}
+######################################################################
+# 1. PRODUCTOS
+######################################################################
 
-### Consultar una mesa
-GET {{baseUrl}}/Me1
+### 1.1 Listar todos los productos
+GET {{products}}
 
-### Cambiar estado (962000000 = Disponible, 962000001 = Ocupada)
-PUT {{baseUrl}}/Me1
+
+######################################################################
+# 2. MESAS: CONSULTAS
+######################################################################
+
+### 2.1 Listar todas las mesas
+GET {{tables}}
+
+### 2.2 Consultar una mesa
+GET {{tables}}/Me1
+
+### 2.3 Consultar un taburete de barra
+GET {{tables}}/Ba1
+
+
+######################################################################
+# 3. MESAS: ESTADO Y PERSONAS (ejecutar en orden)
+######################################################################
+
+### 3.1 Liberar Me1 (queda Disponible, 0 personas y sin grupo)
+PUT {{tables}}/Me1
 Content-Type: application/json
 
-962000001
+962000000
 
-### Poner número de personas (>= 1 la marca Ocupada, 0 la deja Disponible)
-PUT {{baseUrl}}/Me1/people
+### 3.2 Ocupar Me1 con 2 personas (pasa a Ocupada)
+PUT {{tables}}/Me1/people
+Content-Type: application/json
+
+2
+
+### 3.3 Cambiar a 3 personas (el máximo de Me1)
+PUT {{tables}}/Me1/people
 Content-Type: application/json
 
 3
 
-### Asociar mesas (Me2 y Me3 se unen a Me1)
-PUT {{baseUrl}}/Me1/group
+### 3.4 Poner 0 personas (vuelve a Disponible)
+PUT {{tables}}/Me1/people
+Content-Type: application/json
+
+0
+
+### 3.5 Marcar Ocupada directamente (sin cambiar personas)
+PUT {{tables}}/Me1
+Content-Type: application/json
+
+962000001
+
+### 3.6 Comprobar el resultado
+GET {{tables}}/Me1
+
+
+######################################################################
+# 4. MESAS ASOCIADAS (ejecutar en orden)
+######################################################################
+
+### 4.1 Liberar Me1, Me2 y Me3 para empezar limpio
+PUT {{tables}}/Me1
+Content-Type: application/json
+
+962000000
+
+###
+PUT {{tables}}/Me2
+Content-Type: application/json
+
+962000000
+
+###
+PUT {{tables}}/Me3
+Content-Type: application/json
+
+962000000
+
+### 4.2 Asociar Me2 y Me3 a Me1 (capacidad del grupo: 3 + 3 + 3 = 9)
+PUT {{tables}}/Me1/group
 Content-Type: application/json
 
 ["Me2", "Me3"]
 
-### Desasociar solo la mesa Me3 del grupo de Me1
-DELETE {{baseUrl}}/Me1/group/Me3
+### 4.3 Ver el grupo: las tres deben tener "grupo": "Me1"
+GET {{tables}}
+
+### 4.4 Ocupar el grupo con 8 personas (más de lo que cabe en una sola mesa)
+PUT {{tables}}/Me1/people
+Content-Type: application/json
+
+8
+
+### 4.5 Usar una mesa hija también funciona: actúa sobre la principal (Me1)
+PUT {{tables}}/Me2/people
+Content-Type: application/json
+
+7
+
+### 4.6 Quitar Me3 del grupo: capacidad pasa a 6 y las 7 personas se ajustan a 6
+DELETE {{tables}}/Me1/group/Me3
+
+### 4.7 Comprobar: Me1 con 6 personas y grupo Me1; Me3 Disponible y sin grupo
+GET {{tables}}
+
+### 4.8 Quitar Me2: solo queda Me1, así que el grupo desaparece (personas se ajustan a 3)
+DELETE {{tables}}/Me1/group/Me2
+
+### 4.9 Volver a asociar y liberar el grupo entero de una vez
+PUT {{tables}}/Me1/group
+Content-Type: application/json
+
+["Me2", "Me3"]
+
+###
+PUT {{tables}}/Me1
+Content-Type: application/json
+
+962000000
+
+### 4.10 Comprobar: Me1, Me2 y Me3 Disponibles, sin personas y sin grupo
+GET {{tables}}
+
+
+######################################################################
+# 5. CASOS DE ERROR (deben responder 400 o 404)
+######################################################################
+
+### 5.1 Mesa que no existe -> 404
+GET {{tables}}/Me99
+
+### 5.2 Personas negativas -> 400
+PUT {{tables}}/Me1/people
+Content-Type: application/json
+
+-1
+
+### 5.3 Más personas que la capacidad (Me1 admite 3) -> 400
+PUT {{tables}}/Me1/people
+Content-Type: application/json
+
+10
+
+### 5.4 Preparar: ocupar Me5 para la prueba siguiente
+PUT {{tables}}/Me5/people
+Content-Type: application/json
+
+2
+
+### 5.5 Asociar una mesa ocupada (Me5) -> 400
+PUT {{tables}}/Me1/group
+Content-Type: application/json
+
+["Me5"]
+
+### 5.6 Preparar: grupo Me1 + Me2
+PUT {{tables}}/Me1/group
+Content-Type: application/json
+
+["Me2"]
+
+### 5.7 Asociar una mesa que ya está en otro grupo (Me2 es de Me1) -> 400
+PUT {{tables}}/Me3/group
+Content-Type: application/json
+
+["Me2"]
+
+### 5.8 Asociar desde una mesa hija en vez de la principal -> 400
+PUT {{tables}}/Me2/group
+Content-Type: application/json
+
+["Me3"]
+
+### 5.9 Desasociar la mesa principal -> 400
+DELETE {{tables}}/Me1/group/Me1
+
+### 5.10 Desasociar una mesa que no está en el grupo -> 400
+DELETE {{tables}}/Me1/group/Me7
+
+### 5.11 Asociar una mesa que no existe -> 404
+PUT {{tables}}/Me1/group
+Content-Type: application/json
+
+["Me99"]
+
+### 5.12 Limpiar: liberar el grupo Me1 y la mesa Me5
+PUT {{tables}}/Me1
+Content-Type: application/json
+
+962000000
+
+###
+PUT {{tables}}/Me5
+Content-Type: application/json
+
+962000000
+
+
+######################################################################
+# 6. ÓRDENES Y PEDIDOS (ejecutar en orden, usa el taburete Ba1)
+# Al ocupar una mesa se crea su orden (Ba1_001, Ba1_002...) abierta y en 0.
+# Cada pedido (R_001, R_002...) crea una fila por producto con el mismo número.
+# El total lo calcula el backend con el precio del producto.
+######################################################################
+
+### 6.1 Ocupar Ba1 -> crea la orden Ba1_00x abierta
+PUT {{tables}}/Ba1/people
+Content-Type: application/json
+
+1
+
+### 6.2 Orden abierta de Ba1 (con sus detalles)
+GET {{tables}}/Ba1/order
+
+### 6.3 Pedido con varios productos (si se repite un producto se suma)
+POST {{tables}}/Ba1/order/requests
+Content-Type: application/json
+
+{
+  "productos": [
+    { "producto": "Antioqueño Azul Media", "cantidad": 2 },
+    { "producto": "Antioqueño Amarillo Media", "cantidad": 1 }
+  ]
+}
+
+### 6.4 Segundo pedido (nuevo R_00x)
+POST {{tables}}/Ba1/order/requests
+Content-Type: application/json
+
+{ "productos": [ { "producto": "Antioqueño Amarillo Media", "cantidad": 2 } ] }
+
+### 6.5 Listar todas las órdenes (más recientes primero)
+GET {{orders}}
+
+### 6.6 Una orden por número (cámbialo por el que salió en 6.2)
+GET {{orders}}/Ba1_001
+
+### 6.7 Detalles de la orden (cada fila tiene su "id")
+GET {{orders}}/Ba1_001/details
+
+### 6.8 Cambiar la cantidad de una fila (pega el "id" de una fila de 6.7)
+PUT {{orders}}/Ba1_001/details/00000000-0000-0000-0000-000000000000
+Content-Type: application/json
+
+{ "cantidad": 1 }
+
+### 6.9 Quitar una fila de la orden
+DELETE {{orders}}/Ba1_001/details/00000000-0000-0000-0000-000000000000
+
+### 6.10 Errores: producto inexistente (400), cantidad 0 (400), pedido vacío (400)
+POST {{tables}}/Ba1/order/requests
+Content-Type: application/json
+
+{ "productos": [ { "producto": "No existe", "cantidad": 1 } ] }
+
+###
+POST {{tables}}/Ba1/order/requests
+Content-Type: application/json
+
+{ "productos": [ { "producto": "Antioqueño Azul Media", "cantidad": 0 } ] }
+
+###
+POST {{tables}}/Ba1/order/requests
+Content-Type: application/json
+
+{ "productos": [] }
+
+### 6.11 Liberar Ba1 -> la orden pasa a Cerrado
+PUT {{tables}}/Ba1
+Content-Type: application/json
+
+962000000
+
+### 6.12 Pedir con la mesa libre -> 400 (no hay orden abierta)
+POST {{tables}}/Ba1/order/requests
+Content-Type: application/json
+
+{ "productos": [ { "producto": "Antioqueño Azul Media", "cantidad": 1 } ] }
+
+### 6.13 Crear una orden manual (normalmente se crean solas al ocupar)
+POST {{orders}}
+Content-Type: application/json
+
+{ "numeroOrden": "ORD-PRUEBA" }
+
+### 6.14 Borrar una orden (sus detalles se borran en cascada)
+DELETE {{orders}}/ORD-PRUEBA

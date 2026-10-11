@@ -255,7 +255,7 @@ export default function App() {
         />
 
         {/* Cuenta de la mesa */}
-        <OrderPanel table={selectedTable} />
+        <OrderPanel table={selectedTable} canOrder={isConnected} />
       </aside>
 
       <style>{`
@@ -265,6 +265,13 @@ export default function App() {
         }
         .table-wrapper:hover {
           transform: translateY(-4px) scale(1.04);
+        }
+        .product-card {
+          transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        .product-card:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
         }
         .app-layout {
           min-height: 100vh;

@@ -67,6 +67,7 @@ public class MesasController : ControllerBase
 
     // Cambia el estado de la mesa (o de todo su grupo si está asociada).
     // Liberar un grupo lo deshace: todas sus mesas quedan disponibles y sin gente.
+    // Ocupar abre una orden para la mesa y liberar cierra la que tenga abierta.
     [HttpPut("{tableId}")]
     public IActionResult UpdateStatusTable(string tableId, [FromBody] int newStatus)
     {
@@ -96,7 +97,7 @@ public class MesasController : ControllerBase
                 updates.Add(patch);
             }
 
-            SaveAll(updates);
+            SaveAll(updates, OrderChangesFor(GetLeaderId(mesa), newStatus));
 
             return Ok($"Mesa with ID {tableId} updated successfully.");
         }
@@ -134,7 +135,8 @@ public class MesasController : ControllerBase
             }
 
             // Con al menos una persona la mesa pasa a ocupada; con cero queda disponible
-            var status = new OptionSetValue(peopleNumber >= 1 ? StatusOcupada : StatusDisponible);
+            var newStatus = peopleNumber >= 1 ? StatusOcupada : StatusDisponible;
+            var status = new OptionSetValue(newStatus);
 
             var updates = group.Select(member =>
             {
@@ -144,7 +146,7 @@ public class MesasController : ControllerBase
                 return patch;
             });
 
-            SaveAll(updates);
+            SaveAll(updates, OrderChangesFor(leaderId, newStatus));
 
             // Se vuelve a consultar para devolver el EstadoNombre actualizado
             return Ok(ToDto(FindTable(leaderId)!));
@@ -348,14 +350,39 @@ public class MesasController : ControllerBase
     // Entidad vacía con el mismo Id, para enviar a Dataverse solo los campos que cambian
     private static Entity Patch(Entity mesa) => new(mesa.LogicalName, mesa.Id);
 
+    // Orden de la mesa según su nuevo estado: al ocuparla se crea una orden abierta
+    // (si no tiene ya una) y al liberarla se cierra la que esté abierta y se borran sus pedidos.
+    private List<OrganizationRequest> OrderChangesFor(string leaderId, int newStatus)
+    {
+        var client = _dataverseServices.Client;
+        var openOrder = OrderRules.FindOpenOrder(client, leaderId);
+
+        if (newStatus == StatusOcupada && openOrder == null)
+        {
+            return [new CreateRequest { Target = OrderRules.NewOrderForTable(client, leaderId) }];
+        }
+
+        if (newStatus == StatusDisponible && openOrder != null)
+        {
+            return OrderRules.CloseOrderRequests(client, openOrder);
+        }
+
+        return [];
+    }
+
     // Guarda todos los cambios en una sola transacción (o todos o ninguno)
-    private void SaveAll(IEnumerable<Entity> updates)
+    private void SaveAll(IEnumerable<Entity> updates, IEnumerable<OrganizationRequest>? extraRequests = null)
     {
         var request = new ExecuteTransactionRequest { Requests = new OrganizationRequestCollection() };
 
         foreach (var entity in updates)
         {
             request.Requests.Add(new UpdateRequest { Target = entity });
+        }
+
+        foreach (var extra in extraRequests ?? [])
+        {
+            request.Requests.Add(extra);
         }
 
         if (request.Requests.Count > 0)
